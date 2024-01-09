@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
+AUTH_USER_MODEL = "account.User"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # PROJECT APPS
     'Home.apps.HomeConfig',
+    "account.apps.AccountConfig",
 
     # EXTENSIONS
     'django_cleanup.apps.CleanupConfig',
