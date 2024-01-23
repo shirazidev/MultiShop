@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # PROJECT APPS
     'Home.apps.HomeConfig',
-    "account.apps.AccountConfig",
+    'account.apps.AccountConfig',
 
     # EXTENSIONS
     'django_cleanup.apps.CleanupConfig',
