@@ -1,12 +1,10 @@
+# models.py
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, phone, fullname, email=None, password=None):
-        """
-        Creates and saves a User with the given phone, fullname, and password.
-        """
+    def create_user(self, phone, fullname=None, email=None, password=None):
         if not phone:
             raise ValueError("Users must have a phone number")
 
@@ -21,9 +19,6 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, phone, fullname, email=None, password=None):
-        """
-        Creates and saves a superuser with the given phone, fullname, email, and password.
-        """
         user = self.create_user(
             phone=phone,
             email=email,
@@ -44,7 +39,7 @@ class User(AbstractBaseUser):
         blank=True
     )
     fullname = models.CharField(max_length=150, verbose_name="نام کامل")
-    phone = models.CharField(max_length=12, unique=True, verbose_name="شماره تلفن ")
+    phone = models.CharField(max_length=12, unique=True, verbose_name="شماره تلفن")
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False, verbose_name="ادمین")
 
@@ -61,17 +56,21 @@ class User(AbstractBaseUser):
         return self.phone
 
     def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
         return True
 
     def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
         return True
 
     @property
     def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+class Otp(models.Model):
+    token = models.CharField(max_length=255, verbose_name="توکن")
+    phone = models.CharField(max_length=11, verbose_name="شماره تلفن")
+    code = models.SmallIntegerField(verbose_name="کد تایید")
+    expiration_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.code)
