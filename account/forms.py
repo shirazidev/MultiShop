@@ -51,3 +51,7 @@ class LoginForm(forms.Form):
 
 class RegisterForm(forms.Form):
     phone = forms.CharField(widget=forms.TextInput(attrs={'class': "input100"}), validators=[MaxLengthValidator(11)])
+
+
+class OtpForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(attrs={'class': "input100"}), validators=[MaxLengthValidator(4)])

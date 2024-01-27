@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.db import models
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -68,9 +70,19 @@ class User(AbstractBaseUser):
 
 
 class Otp(models.Model):
+    token = models.CharField(max_length=200, null=True)
     phone = models.CharField(max_length=11)
     code = models.SmallIntegerField()
-    expires = models.DateTimeField(auto_now_add=True)
+    expires = models.DateTimeField()
 
     def __str__(self):
-        self.phone
+        return str(self.code)
+
+    def is_expired(self):
+        return timezone.now() > self.expires
+
+    def save(self, *args, **kwargs):
+        # Set the expiration time to 5 minutes from now
+        if not self.expires:
+            self.expires = timezone.now() + timezone.timedelta(minutes=5)
+        super().save(*args, **kwargs)
