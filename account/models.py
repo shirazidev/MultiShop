@@ -1,32 +1,30 @@
 from django.db import models
-from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
-)
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, phone, password=None):
         """
-        Creates and saves a User with the given email and password.
+        Creates and saves a User with the given phone and password.
         """
-        if not email:
-            raise ValueError('Users must have an email address')
+        if not phone:
+            raise ValueError('Users must have a phone address')
 
         user = self.model(
-            email=self.normalize_email(email),
+            phone=phone,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None):
+    def create_superuser(self, phone, password=None):
         """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
+        Creates and saves a superuser with the given phone, date of
+        birth, and password.
         """
         user = self.create_user(
-            email,
+            phone,
             password=password,
         )
         user.is_admin = True
@@ -35,35 +33,44 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    email = models.EmailField(
-        verbose_name='آدرس ایمیل',
-        max_length=255,
-        unique=True,
-    )
     fullname = models.CharField(max_length=100, verbose_name='نام و نام خانوادگی')
+    phone = models.CharField(max_length=12, verbose_name='شماره تلفن', unique=True)
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False, verbose_name="ادمین")
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
 
+    class Meta:
+        verbose_name = 'کاربر'
+        verbose_name_plural = 'کاربران'
+
     def __str__(self):
-        return self.email
+        return self.phone
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
-        return True
+        # Check if the user is an admin
+        return self.is_admin
 
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
-        return True
+        # Check if the user is an admin
+        return self.is_admin
 
     @property
     def is_staff(self):
         "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
+        # All admins are staff
         return self.is_admin
+
+
+class Otp(models.Model):
+    phone = models.CharField(max_length=11)
+    code = models.SmallIntegerField()
+    expires = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        self.phone
