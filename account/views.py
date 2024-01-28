@@ -104,7 +104,7 @@ class CheckOtpView(View):
                 else:
                     # OTP is valid, create user and log in
                     user, is_created = User.objects.get_or_create(phone=otp_instance.phone)
-                    login(request, user)
+                    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     # Optionally, you may want to delete the used OTP instance here
                     otp_instance.delete()
                     return redirect('Home:home')
